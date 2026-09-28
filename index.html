@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>DICE RUGBY TACTICS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Noto+Sans+JP:wght@500;700;900&display=swap');
+
+  body {
+    font-family: 'Orbitron', 'Noto Sans JP', -apple-system, sans-serif;
+    background: #090a0f;
+    background-image: 
+      radial-gradient(circle at 50% 10%, rgba(0, 242, 254, 0.15) 0%, transparent 60%),
+      radial-gradient(circle at 80% 80%, rgba(79, 172, 254, 0.08) 0%, transparent 50%);
+    color: #e2e8f0;
+    text-align: center;
+    margin: 0;
+    padding: 6px 2px;
+    box-sizing: border-box;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* ヘッダー：グラスモーフィズム & ネオンライン */
+  #game-header {
+    width: 285px;
+    margin: 0 auto 4px auto;
+    background: rgba(18, 24, 38, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 242, 254, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(0, 242, 254, 0.1);
+    padding: 3px 6px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .header-spacer {
+    width: 18px;
+    flex-shrink: 0;
+  }
+
+  #game-title {
+    font-size: 13px;
+    color: #ffffff;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    margin: 0;
+    white-space: nowrap;
+    text-align: center;
+    flex-grow: 1;
+    text-shadow: 0 0 10px rgba(0, 242, 254, 0.6);
+  }
+
+  .rule-btn {
+    background: rgba(255, 255, 255, 0.05);
+    color: #00f2fe;
+    font-size: 10px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 242, 254, 0.4);
+    cursor: pointer;
+    font-weight: bold;
+    flex-shrink: 0;
+    width: 20px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .rule-btn:hover {
+    background: rgba(0, 242, 254, 0.2);
+    box-shadow: 0 0 8px rgba(0, 242, 254, 0.5);
+  }
+
+  #game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 320px;
+    margin: 0 auto;
+    gap: 4px;
+  }
+
+  #board-wrapper {
+    position: relative;
+    width: 285px;
+    height: 195px;
+    background-color: #0c1421;
+    background-image: 
+      linear-gradient(rgba(0, 242, 254, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 242, 254, 0.05) 1px, transparent 1px);
+    background-size: 10px 10px;
+    border: 1px solid rgba(0, 242, 254, 0.4);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.8), 0 0 8px rgba(0, 242, 254, 0.15);
+    box-sizing: border-box;
+    margin: 0 auto;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .ingoal-header {
+    width: 100%;
+    height: 26px;
+    background: linear-gradient(180deg, rgba(235, 47, 6, 0.4) 0%, rgba(235, 47, 6, 0.15) 100%);
+    position: relative;
+    box-sizing: border-box;
+    border-bottom: 1.5px solid rgba(255, 77, 77, 0.8);
+    flex-shrink: 0;
+    box-shadow: 0 0 10px rgba(235, 47, 6, 0.3);
+  }
+
+  .goal-post {
+    position: absolute;
+    width: 30px;
+    height: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    bottom: -2px; 
+  }
+
+  .goal-post::before, .goal-post::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    width: 2px;
+    height: 100%;
+    background-color: #ffffff;
+    box-shadow: 0 0 6px #ffffff;
+  }
+  .goal-post::before { left: 0; }
+  .goal-post::after { right: 0; }
+
+  .goal-post .crossbar {
+    position: absolute;
+    top: 45%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #ffffff;
+    box-shadow: 0 0 6px #ffffff;
+    transform: translateY(-50%);
+  }
+
+  #field-container {
+    position: relative;
+    width: 100%;
+    flex-grow: 1;
+    overflow: visible;
+  }
+
+  .v-line {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 1px;
+    background-color: rgba(255, 255, 255, 0.15);
+    z-index: 2;
+  }
+
+  .h-line {
+    position: absolute;
+    left: 0; right: 0;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.15);
+    z-index: 2;
+  }
+  .h-line.dashed { 
+    border-top: 1px dashed rgba(0, 242, 254, 0.8); 
+    background: none; 
+    height: 0; 
+    z-index: 3;
+    box-shadow: 0 0 4px rgba(0, 242, 254, 0.5);
+  }
+
+  .line-label {
+    position: absolute;
+    left: 4px;
+    font-size: 8px;
+    color: #00f2fe;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transform: translateY(-50%);
+    z-index: 4;
+    text-shadow: 0 0 5px rgba(0, 242, 254, 0.8);
+  }
+
+  /* サイバーオーブ型楕円ラグビーボール */
+  #ball-token {
+    position: absolute;
+    width: 10px;
+    height: 18px;
+    border-radius: 50% / 50%;
+    transition: left 0.5s cubic-bezier(0.25, 1, 0.5, 1), top 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    transform: translate(-50%, -50%) rotate(-15deg);
+    box-shadow: 0 0 10px #ff2a6d, 0 0 20px #ff2a6d;
+    z-index: 10;
+    background: radial-gradient(ellipse at 35% 35%, #ffffff 0%, #ff2a6d 70%, #990033 100%);
+    border: 1px solid #ffffff;
+  }
+
+  @keyframes kickPassArc {
+    0% { transform: translate(-50%, -50%) rotate(-15deg) scale(1); }
+    50% { transform: translate(-50%, -180%) rotate(180deg) scale(1.6); box-shadow: 0 0 25px #00f2fe; }
+    100% { transform: translate(-50%, -50%) rotate(360deg) scale(1); }
+  }
+  .kicking { animation: kickPassArc 3.0s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+
+  #controls {
+    width: 285px;
+    background: rgba(18, 24, 38, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 5px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  }
+
+  .control-row {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 3px;
+    align-items: stretch;
+  }
+
+  .control-col-left {
+    width: 100px;
+    background: rgba(10, 14, 23, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 3px 5px;
+    font-size: 8.5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    text-align: left;
+    box-sizing: border-box;
+    flex-shrink: 0;
+  }
+
+  .control-col-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    background: rgba(10, 14, 23, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 4px 6px;
+    box-sizing: border-box;
+  }
+
+  .status-item {
+    display: flex;
+    justify-content: space-between;
+    color: #94a3b8;
+  }
+  
+  .channel-header-row {
+    margin-bottom: 2px;
+  }
+  
+  label { font-size: 8px; color: #00f2fe; font-weight: 700; letter-spacing: 0.5px; }
+
+  select {
+    font-family: inherit;
+    font-size: 9.5px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 242, 254, 0.3);
+    width: 100%;
+    box-sizing: border-box;
+    background: #0d131d;
+    color: #ffffff;
+    margin-bottom: 4px;
+    outline: none;
+  }
+
+  /* スタイリッシュなネオングラデーションボタン */
+  #controls button#roll-btn { 
+    background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+    color: #090a0f; 
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10.5px;
+    font-weight: 800; 
+    cursor: pointer; 
+    padding: 4px;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    border: none;
+    box-shadow: 0 0 12px rgba(0, 242, 254, 0.4);
+    transition: all 0.2s;
+  }
+  #controls button#roll-btn:hover { 
+    box-shadow: 0 0 18px rgba(0, 242, 254, 0.7);
+    filter: brightness(1.1);
+  }
+  #controls button#roll-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 0 6px rgba(0, 242, 254, 0.4);
+  }
+  #controls button#roll-btn:disabled { 
+    background: #1e293b; 
+    color: #475569;
+    box-shadow: none;
+    cursor: not-allowed; 
+  }
+  
+  #dice-result-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    margin: 3px 0;
+    box-sizing: border-box;
+  }
+  
+  #dice-color-box {
+    width: 20px;
+    height: 18px;
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: #1e293b;
+    flex-shrink: 0;
+  }
+
+  #dice-text-box {
+    flex-grow: 1;
+    height: 18px;
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 8.5px;
+    background-color: rgba(10, 14, 23, 0.9);
+    color: #ffffff;
+    letter-spacing: 0.5px;
+  }
+
+  #log { 
+    font-size: 8.5px; 
+    color: #cbd5e1; 
+    min-height: 20px; 
+    background: rgba(10, 14, 23, 0.9); 
+    padding: 3px 6px; 
+    border-radius: 4px; 
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: left; 
+    box-sizing: border-box; 
+    display: flex;
+    align-items: center;
+  }
+
+  #channel-guide-panel {
+    background: rgba(10, 14, 23, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    padding: 3px 5px;
+    margin-top: 2px;
+    box-sizing: border-box;
+    text-align: left;
+  }
+  #channel-guide-title {
+    font-size: 7.5px;
+    color: #00f2fe;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 1px;
+  }
+  .channel-guide-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5px;
+    font-size: 7.5px;
+  }
+  .channel-guide-name {
+    color: #94a3b8;
+    font-weight: 500;
+    width: 82px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .channel-guide-colors {
+    display: flex;
+    gap: 1.5px;
+  }
+
+  /* モーダル */
+  #modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(5, 7, 12, 0.85);
+    backdrop-filter: blur(8px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+  }
+  #modal-content {
+    background: #0d131d;
+    border: 1px solid rgba(0, 242, 254, 0.4);
+    border-radius: 10px;
+    width: 90%;
+    max-width: 300px;
+    max-height: 85vh;
+    padding: 10px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    box-shadow: 0 0 30px rgba(0, 242, 254, 0.2);
+    animation: fadeInScale 0.2s ease-out;
+  }
+  @keyframes fadeInScale {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  #modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 4px;
+    margin-bottom: 6px;
+  }
+  #modal-title {
+    font-size: 11px;
+    color: #00f2fe;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .close-btn {
+    background: rgba(255, 255, 255, 0.05);
+    color: #94a3b8;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    font-size: 8.5px;
+    padding: 2px 6px;
+    cursor: pointer;
+    width: auto;
+    margin: 0;
+  }
+  .close-btn:hover { color: #fff; border-color: #fff; }
+  #modal-body {
+    font-size: 8.5px;
+    overflow-y: auto;
+    max-height: 320px;
+    line-height: 1.4;
+    color: #cbd5e1;
+    padding-right: 2px;
+  }
+  .tutorial-section {
+    margin-bottom: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 6px;
+    border-radius: 4px;
+    border-left: 2px solid #00f2fe;
+  }
+  .tutorial-section h4 {
+    margin: 0 0 3px 0;
+    color: #00f2fe;
+    font-size: 9px;
+  }
+  .tutorial-section p {
+    margin: 0;
+    font-size: 8.5px;
+  }
+</style>
+</head>
+<body>
+
+<div id="game-container">
+  <div id="game-header">
+    <div class="header-spacer"></div>
+    <div id="game-title">DICE RUGBY TACTICS</div>
+    <button class="rule-btn" onclick="openTutorialModal()">?</button>
+  </div>
+
+  <div id="board-wrapper">
+    <div class="ingoal-header">
+      <div class="goal-post"><div class="crossbar"></div></div>
+    </div>
+    <div id="field-container">
+      <div class="v-line" style="left: 10%;"></div>
+      <div class="v-line" style="left: 30%;"></div>
+      <div class="v-line" style="left: 50%;"></div>
+      <div class="v-line" style="left: 70%;"></div>
+      <div class="v-line" style="left: 90%;"></div>
+      <div id="ball-token"></div>
+    </div>
+  </div>
+
+  <div id="controls">
+    <div class="control-row">
+      <div class="control-col-left">
+        <div class="status-item"><span>TRY ATTEMPT</span> <span id="try-count" style="color:#00f2fe; font-weight:bold;">1</span></div>
+        <div class="status-item"><span>PHASE</span> <span id="phase-num" style="color:#ffffff; font-weight:bold;">1/10</span></div>
+        <div class="status-item"><span>SCORE</span> <span id="score-tries" style="color:#ff2a6d; font-weight:bold;">0</span></div>
+      </div>
+
+      <div class="control-col-right">
+        <div class="channel-header-row">
+          <label>ATTACK CHANNEL</label>
+        </div>
+        <select id="channel-select"></select>
+        <button id="roll-btn" onclick="executePlay()">EXECUTE</button>
+      </div>
+    </div>
+
+    <div id="channel-guide-panel">
+      <div id="channel-guide-title">DICE MATRIX</div>
+      <div id="channel-guide-list"></div>
+    </div>
+
+    <div id="dice-result-container">
+      <div id="dice-color-box"></div>
+      <div id="dice-text-box">-</div>
+    </div>
+
+    <div id="log">カラーダイスの出目を予測して、10フェイズ以内にトライを獲りきれ！</div>
+  </div>
+</div>
+
+<div id="modal-overlay" onclick="closeTutorialModal(event)">
+  <div id="modal-content" onclick="event.stopPropagation()">
+    <div id="modal-header">
+      <span id="modal-title">TUTORIAL / RULES</span>
+      <button class="close-btn" onclick="closeTutorialModal()">✕ CLOSE</button>
+    </div>
+    <div id="modal-body">
+      <div class="tutorial-section">
+        <h4>【ステップ1：ゲームの目的】</h4>
+        <p>・10フェイズ以内に画面最上部の「TRY ZONE」までボールを進めてトライを奪うこと！<br>
+        ・10フェイズ経過、ターンオーバー（TO）、または<strong>22mラインの外へ押し出される</strong>とゲームオーバーです。</p>
+      </div>
+
+      <div class="tutorial-section">
+        <h4>【ステップ2：ピッチの3つのレーン構造】</h4>
+        <p>ピッチは縦のエリアによって3つのレーンに分かれています。<br>
+        ・<strong>EL（エッジレーン / 外側）</strong>：大ゲインやキックパスが狙える反面、リスクも高い勝負どころ。<br>
+        ・<strong>HL（ハーフレーン / 中間）</strong>：パスやランで着実にゲインを重ねる戦術の要。<br>
+        ・<strong>CL（セントラルレーン / 中央）</strong>：攻撃の展開力を広げる司令塔エリア。</p>
+      </div>
+
+      <div class="tutorial-section">
+        <h4>【ステップ3：アタックチャンネルを選ぼう】</h4>
+        <p>ボールの位置で変わる5つの選択肢からルートを選びます。<br>
+        ・<strong>Point</strong>：堅実に中央やサイドを突く基本の攻め。<br>
+        ・<strong>Inside</strong>：内側を突くパス。手堅い進行。<br>
+        ・<strong>Middle</strong>：中央(CL)をダイナミックに攻めるルート。<br>
+        ・<strong>Outside</strong>：外側のスペースを狙うハイゲインアタック。<br>
+        ・<strong>Short</strong>：ギャップを鋭く突き刺す攻撃ルート。<br>
+        ・<strong>Edge</strong>：最外側(EL)を限界まで攻めるルート。</p>
+      </div>
+
+      <div class="tutorial-section">
+        <h4>【ステップ4：ダイスを振って進めよう】</h4>
+        <p>「<strong>EXECUTE</strong>」ボタンでダイスを振り、進むマスが決まります。<br>
+        ・<strong>数字</strong>：その数だけ前進！<br>
+        ・<strong>マイナス</strong>：ディフェンスに押し戻される…<br>
+        ・<strong>CB（クリーンブレイク）</strong>：次から進むマスが<strong>2倍</strong>にブースト！<br>
+        ・<strong>TO</strong>：ボールを奪われ即ゲームオーバー！</p>
+      </div>
+
+      <div class="tutorial-section">
+        <h4>【ステップ5：特殊な出目「1OP」と「1A」】</h4>
+        <p>・<strong>1OP（オフロードパス）</strong>：1マス進んだ後に追加ダイスでさらなる大ゲイン！<br>
+        ・<strong>1A（アドバンテージ）</strong>：逆サイドへ一発トライを狙うクロスキックが発動！</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const COLORS_META = [
+    { name: '赤', key: 'red', hex: '#ff2a6d' },
+    { name: '青', key: 'blue', hex: '#00f2fe' },
+    { name: '黄', key: 'yellow', hex: '#ffeaa7' },
+    { name: '紫', key: 'purple', hex: '#a29bfe' },
+    { name: '緑', key: 'green', hex: '#00b894' },
+    { name: '橙', key: 'orange', hex: '#ff7675' }
+  ];
+
+  const PASS_TABLE = {
+    'Point':   { red: {val: 0, label: '0'}, blue: {val: 0, label: '0'}, yellow: {val: 0, label: '0'},  purple: {val: 1, label: '1'},  green: {val: 1, label: '1'},  orange: {val: 0, label: '0'} },
+    'Inside':  { red: {val: -1, label: '-1'}, blue: {val: -1, label: '-1'},yellow: {val: 0, label: '0'},  purple: {val: 1, label: '1'},  green: {val: 1, label: '1'},  orange: {val: 1, label: '1'} },
+    'Middle':  { red: {val: 2, label: '2'}, blue: {val: -1, label: '-1'},yellow: {val: -1, label: '-1'}, purple: {val: 0, label: '0'},  green: {val: 1, label: '1'},  orange: {val: '1OP', isOffload: true, label: '1OP'} },
+    'Short':   { red: {val: 2, label: '2'}, blue: {val: 3, isCNB: true, label: '3CB'}, yellow: {val: -1, label: '-1'},purple: {val: -1, label: '-1'}, green: {val: 0, label: '0'},  orange: {val: 0, label: '0'} },
+    'Outside': { red: {val: 1, label: '1'}, blue: {val: 2, label: '2'}, yellow: {val: 4, isCNB: true, label: '4CB'}, purple: {val: -2, label: '-2'}, green: {val: -1, label: '-1'}, orange: {val: 0, label: '0'} },
+    'Edge':    { red: {val: 0, label: '0'}, blue: {val: '1A', isKickPass: true, label: '1A'}, yellow: {val: 3, label: '3'},  purple: {val: 5, isCNB: true, label: '5CB'}, green: {val: 'TO', isTO: true, label: 'TO'}, orange: {val: -2, label: '-2'} }
+  };
+
+  const TOTAL_LINES = 13; 
+  let linePositionsY = [];
+  let ballX = 2; 
+  let ballY = 10; 
+  let currentPhase = 1;
+  let maxPhases = 10;
+  let totalTries = 0;
+  let tryAttemptCount = 1;
+  let hasCleanBreak = false;
+
+  let currentAvailableOptions = [];
+  const X_POS = [10, 30, 50, 70, 90];
+
+  function setupBoard() {
+    linePositionsY = new Array(TOTAL_LINES);
+    const container = document.getElementById('field-container');
+    container.innerHTML = '';
+
+    ['10%', '30%', '50%', '70%', '90%'].forEach(leftPos => {
+      const vLine = document.createElement('div');
+      vLine.className = 'v-line';
+      vLine.style.left = leftPos;
+      container.appendChild(vLine);
+    });
+
+    const token = document.createElement('div');
+    token.id = 'ball-token';
+    container.appendChild(token);
+
+    for (let i = 0; i < TOTAL_LINES; i++) {
+      linePositionsY[i] = (i / (TOTAL_LINES - 1)) * 100;
+    }
+
+    for (let i = 0; i < TOTAL_LINES; i++) {
+      const hLine = document.createElement('div');
+      if (i === 0) {
+        hLine.className = 'h-line';
+        hLine.style.top = '0px';
+      } else if (i === TOTAL_LINES - 2) {
+        hLine.className = 'h-line dashed';
+        hLine.style.top = linePositionsY[i] + '%';
+      } else if (i === TOTAL_LINES - 1) {
+        continue;
+      } else {
+        hLine.className = 'h-line';
+        hLine.style.top = linePositionsY[i] + '%';
+      }
+      container.appendChild(hLine);
+    }
+
+    const label22 = document.createElement('div');
+    label22.className = 'line-label';
+    label22.innerText = '22m';
+    label22.style.top = linePositionsY[TOTAL_LINES - 2] + '%';
+    container.appendChild(label22);
+
+    updateAvailableChannels();
+    updateDisplayImmediate();
+  }
+
+  function updateAvailableChannels() {
+    const channelSelect = document.getElementById('channel-select');
+    channelSelect.innerHTML = '';
+    
+    if (ballX === 0) {
+      currentAvailableOptions = [
+        { label: 'Point (左EL)', x: 0, key: 'Point' },
+        { label: 'Inside (左HL)', x: 1, key: 'Inside' },
+        { label: 'Middle (CL)', x: 2, key: 'Middle' },
+        { label: 'Outside (右HL)', x: 3, key: 'Outside' },
+        { label: 'Edge (右EL)', x: 4, key: 'Edge' }
+      ];
+    } else if (ballX === 4) {
+      currentAvailableOptions = [
+        { label: 'Point (右EL)', x: 4, key: 'Point' },
+        { label: 'Inside (右HL)', x: 3, key: 'Inside' },
+        { label: 'Middle (CL)', x: 2, key: 'Middle' },
+        { label: 'Outside (左HL)', x: 1, key: 'Outside' },
+        { label: 'Edge (左EL)', x: 0, key: 'Edge' }
+      ];
+    } else if (ballX === 1) {
+      currentAvailableOptions = [
+        { label: 'Short (左EL)', x: 0, key: 'Short' },
+        { label: 'Point (左HL)', x: 1, key: 'Point' },
+        { label: 'Inside (CL)', x: 2, key: 'Inside' },
+        { label: 'Middle (右HL)', x: 3, key: 'Middle' },
+        { label: 'Outside (右EL)', x: 4, key: 'Outside' }
+      ];
+    } else if (ballX === 3) {
+      currentAvailableOptions = [
+        { label: 'Short (右EL)', x: 4, key: 'Short' },
+        { label: 'Point (右HL)', x: 3, key: 'Point' },
+        { label: 'Inside (CL)', x: 2, key: 'Inside' },
+        { label: 'Middle (左HL)', x: 1, key: 'Middle' },
+        { label: 'Outside (左EL)', x: 0, key: 'Outside' }
+      ];
+    } else {
+      currentAvailableOptions = [
+        { label: 'Point (CL)', x: 2, key: 'Point' },
+        { label: 'Inside (左HL)', x: 1, key: 'Inside' },
+        { label: 'Inside (右HL)', x: 3, key: 'Inside' },
+        { label: 'Outside (左EL)', x: 0, key: 'Outside' },
+        { label: 'Outside (右EL)', x: 4, key: 'Outside' }
+      ];
+    }
+
+    currentAvailableOptions.forEach(optData => {
+      const opt = document.createElement('option');
+      opt.value = JSON.stringify(optData);
+      opt.innerText = optData.label;
+      channelSelect.appendChild(opt);
+    });
+
+    renderChannelGuidePanel();
+  }
+
+  function renderChannelGuidePanel() {
+    const guideList = document.getElementById('channel-guide-list');
+    guideList.innerHTML = '';
+
+    currentAvailableOptions.forEach(opt => {
+      const table = PASS_TABLE[opt.key];
+      const itemDiv = document.createElement('div');
+      itemDiv.className = 'channel-guide-item';
+
+      const nameSpan = document.createElement('div');
+      nameSpan.className = 'channel-guide-name';
+      nameSpan.innerText = opt.label;
+      itemDiv.appendChild(nameSpan);
+
+      const colorsContainer = document.createElement('div');
+      colorsContainer.className = 'channel-guide-colors';
+
+      COLORS_META.forEach(c => {
+        let cell = table[c.key];
+        let span = document.createElement('span');
+        span.style.background = c.hex;
+        span.style.color = '#000';
+        span.style.padding = '1px 2px';
+        span.style.borderRadius = '2px';
+        span.style.fontSize = '7px';
+        span.style.fontWeight = 'bold';
+        span.style.width = '14px';
+        span.style.textAlign = 'center';
+        span.style.display = 'inline-block';
+        span.innerText = cell.label;
+        span.title = `${c.name}: ${cell.label}`;
+        colorsContainer.appendChild(span);
+      });
+
+      itemDiv.appendChild(colorsContainer);
+      guideList.appendChild(itemDiv);
+    });
+  }
+
+  function openTutorialModal() {
+    document.getElementById('modal-overlay').style.display = 'flex';
+  }
+
+  function closeTutorialModal(event) {
+    if (!event || event.target.id === 'modal-overlay' || event.target.classList.contains('close-btn')) {
+      document.getElementById('modal-overlay').style.display = 'none';
+    }
+  }
+
+  function updateDisplayImmediate() {
+    const token = document.getElementById('ball-token');
+    token.style.transition = 'left 0.5s cubic-bezier(0.25, 1, 0.5, 1), top 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
+    token.style.left = X_POS[ballX] + '%';
+    token.style.top = linePositionsY[ballY] + '%';
+    
+    document.getElementById('phase-num').innerText = currentPhase + '/10';
+    document.getElementById('try-count').innerText = tryAttemptCount;
+    document.getElementById('score-tries').innerText = totalTries;
+  }
+
+  function animatePassingMovement(newX, newY, onComplete) {
+    const token = document.getElementById('ball-token');
+    token.style.transition = 'left 0.5s cubic-bezier(0.25, 1, 0.5, 1), top 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
+    const startX = ballX;
+
+    if (startX === newX) {
+      token.style.top = linePositionsY[newY] + '%';
+      ballY = newY;
+      setTimeout(onComplete, 220);
+      return;
+    }
+
+    let pathXIndices = [];
+    let stepDirection = (newX > startX) ? 1 : -1;
+    let curr = startX + stepDirection;
+    while (curr !== newX) {
+      pathXIndices.push(curr);
+      curr += stepDirection;
+    }
+    pathXIndices.push(newX);
+
+    let stepIdx = 0;
+    function jumpToNextIntermediateX() {
+      if (stepIdx < pathXIndices.length) {
+        let intermediateX = pathXIndices[stepIdx];
+        token.style.left = X_POS[intermediateX] + '%';
+        ballX = intermediateX;
+        stepIdx++;
+        setTimeout(jumpToNextIntermediateX, 500);
+      } else {
+        setTimeout(() => {
+          token.style.top = linePositionsY[newY] + '%';
+          ballY = newY;
+          setTimeout(() => { if (onComplete) onComplete(); }, 220);
+        }, 120);
+      }
+    }
+    jumpToNextIntermediateX();
+  }
+
+  function executePlay() {
+    const selectedOption = JSON.parse(document.getElementById('channel-select').value);
+    const diceIndex = Math.floor(Math.random() * 6);
+    const rolledMeta = COLORS_META[diceIndex];
+    const cellData = PASS_TABLE[selectedOption.key][rolledMeta.key];
+
+    const colorBox = document.getElementById('dice-color-box');
+    colorBox.style.backgroundColor = rolledMeta.hex;
+    
+    const textBox = document.getElementById('dice-text-box');
+    textBox.innerText = cellData.isKickPass ? '1A (ADVANTAGE)' : (cellData.isOffload ? '1OP (OFFLOAD)' : cellData.label);
+    textBox.style.backgroundColor = '#0d131d';
+    textBox.style.color = '#00f2fe';
+
+    const isTO = (cellData.isTO || cellData.label === 'TO');
+    const isKickPass = cellData.isKickPass;
+    const isOffload = cellData.isOffload;
+
+    let tempSteps = 0;
+    let isNextCB = false;
+    const result = cellData.val;
+
+    if (typeof result === 'number') {
+      tempSteps = result;
+      if (cellData.isCNB) isNextCB = true;
+    } else if (result === '1a' || result === '1op') {
+      tempSteps = 1;
+    } else {
+      const cleanVal = parseInt(result);
+      if (!isNaN(cleanVal)) {
+        tempSteps = cleanVal;
+        if (cellData.isCNB) isNextCB = true;
+      } else {
+        tempSteps = 0;
+      }
+    }
+
+    let logExtra = "";
+    if (hasCleanBreak && tempSteps > 0) {
+      tempSteps *= 2;
+      logExtra = " (⚡ BOOST x2!)";
+    }
+
+    if (hasCleanBreak && tempSteps <= 0) {
+      hasCleanBreak = false;
+      logExtra = " (BOOST EXPIRED)";
+    }
+
+    if (isNextCB) {
+      hasCleanBreak = true;
+      logExtra = " 🔥【CLEAN BREAK! NEXT GAIN x2】";
+    }
+
+    let targetY = ballY - tempSteps;
+    let targetX = selectedOption.x;
+
+    let isOutside22m = (targetY >= TOTAL_LINES - 1);
+    if (isOutside22m) {
+      targetY = TOTAL_LINES - 1; 
+    }
+    if (targetY < 0) targetY = 0;
+
+    lockControls(true);
+
+    animatePassingMovement(targetX, targetY, () => {
+      updateAvailableChannels();
+
+      if (checkWinCondition()) return;
+
+      if (isTO) {
+        failGame("🔄 TURNOVER! ボールを奪われました...");
+        return;
+      }
+      if (isOutside22m) {
+        failGame("⚠️ OUT OF BOUNDS! 22m外へ押し出されました...");
+        return;
+      }
+
+      if (isOffload) {
+        document.getElementById('log').innerText = `【Middle】➔ 1OP！ オフロードパス成功！...`;
+
+        setTimeout(() => {
+          const opRoll = Math.floor(Math.random() * 6);
+
+          if (opRoll === 0) {
+            failGame("❌ OFFLOAD FAILED! ハンドリングエラー...");
+          } else {
+            const opGain = opRoll; 
+            
+            let opTargetY = ballY - opGain;
+            let isOpOutside = (opTargetY >= TOTAL_LINES - 1);
+            if (isOpOutside) opTargetY = TOTAL_LINES - 1;
+            if (opTargetY < 0) opTargetY = 0;
+
+            document.getElementById('log').innerText = `⚡ OFFLOAD SUCCESS! ＋${opGain} GAIN!!`;
+
+            const token = document.getElementById('ball-token');
+            ballY = opTargetY;
+            token.style.top = linePositionsY[ballY] + '%';
+
+            setTimeout(() => {
+              if (isOpOutside) {
+                failGame("⚠️ OUT OF BOUNDS! 22m外へ押し出されました...");
+                return;
+              }
+              if (checkWinCondition()) return;
+
+              currentPhase++;
+              if (currentPhase > maxPhases) {
+                failGame("PHASE LIMIT EXCEEDED!");
+                return;
+              }
+
+              document.getElementById('phase-num').innerText = currentPhase + '/10';
+              lockControls(false);
+              updateAvailableChannels();
+            }, 800);
+          }
+        }, 500);
+
+        return;
+      }
+
+      if (isKickPass && (ballX === 0 || ballX === 4)) {
+        const originalEdgeX = ballX;
+        const originalY = ballY;
+        const targetEdgeX = (originalEdgeX === 0) ? 4 : 0;
+        const targetY = 0;
+
+        document.getElementById('log').innerText = `【Edge】➔ 1A！ アドバンテージ！ クロスキック発動！...`;
+
+        setTimeout(() => {
+          document.getElementById('log').innerText = ` 逆サイドへクロスキック！！`;
+
+          const token = document.getElementById('ball-token');
+          token.style.transition = 'left 3.0s cubic-bezier(0.15, 0.85, 0.35, 1), top 3.0s cubic-bezier(0.15, 0.85, 0.35, 1)';
+          token.classList.add('kicking');
+          
+          ballX = targetEdgeX;
+          ballY = targetY;
+          token.style.left = X_POS[ballX] + '%';
+          token.style.top = linePositionsY[0] + '%';
+
+          setTimeout(() => {
+            token.classList.remove('kicking');
+            const isSuccess = Math.random() < 0.3333;
+
+            if (isSuccess) {
+              totalTries++;
+              document.getElementById('score-tries').innerText = totalTries;
+              document.getElementById('log').innerText = `✨ CATCH SUCCESS! クロスキックトライ達成！！`;
+              setTimeout(() => { resetGameSession(); }, 2500);
+            } else {
+              document.getElementById('log').innerText = `❌ CATCH FAILED... 元のEdgeへ戻りフェイズ1リスタート。`;
+              
+              ballX = originalEdgeX;
+              ballY = originalY;
+              currentPhase = 1;
+              hasCleanBreak = false;
+              
+              token.style.transition = 'left 0.5s cubic-bezier(0.25, 1, 0.5, 1), top 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
+              token.style.left = X_POS[ballX] + '%';
+              token.style.top = linePositionsY[ballY] + '%';
+
+              setTimeout(() => {
+                lockControls(false);
+                updateAvailableChannels();
+                updateDisplayImmediate();
+                
+                document.getElementById('dice-color-box').style.backgroundColor = '#1e293b';
+                document.getElementById('dice-text-box').innerText = '-';
+                document.getElementById('dice-text-box').style.backgroundColor = 'rgba(10, 14, 23, 0.9)';
+                document.getElementById('dice-text-box').style.color = '#fff';
+              }, 600);
+            }
+          }, 3000); 
+        }, 2000); 
+
+        return;
+      }
+
+      currentPhase++;
+      document.getElementById('log').innerText = `【${selectedOption.key}】➔ [${rolledMeta.name}] ${cellData.label}${logExtra}`;
+
+      if (currentPhase > maxPhases) {
+        failGame("⏱️ PHASE LIMIT EXCEEDED!");
+        return;
+      }
+
+      document.getElementById('phase-num').innerText = currentPhase + '/10';
+      lockControls(false);
+    });
+  }
+
+  function checkWinCondition() {
+    if (ballY <= 0) {
+      totalTries++;
+      document.getElementById('score-tries').innerText = totalTries;
+      document.getElementById('log').innerText = `🎉 TRY!! トライ成功！！`;
+      
+      lockControls(true);
+      setTimeout(() => { resetGameSession(); }, 2500);
+      return true;
+    }
+    return false;
+  }
+
+  function failGame(reasonText) {
+    document.getElementById('log').innerText = `${reasonText} リスタート。`;
+    lockControls(true);
+    setTimeout(() => {
+      tryAttemptCount++;
+      resetGameSession();
+    }, 2500);
+  }
+
+  function resetGameSession() {
+    ballX = 2;
+    ballY = 10; 
+    currentPhase = 1;
+    hasCleanBreak = false;
+    lockControls(false);
+    updateAvailableChannels();
+    updateDisplayImmediate();
+    
+    document.getElementById('dice-color-box').style.backgroundColor = '#1e293b';
+    document.getElementById('dice-text-box').innerText = '-';
+    document.getElementById('dice-text-box').style.backgroundColor = 'rgba(10, 14, 23, 0.9)';
+    document.getElementById('dice-text-box').style.color = '#fff';
+    
+    document.getElementById('log').innerText = `ゲームスタート！10フェイズ以内にTRYを狙え！`;
+  }
+
+  function lockControls(isLock) {
+    document.getElementById('roll-btn').disabled = isLock;
+    document.getElementById('channel-select').disabled = isLock;
+  }
+
+  setupBoard();
+</script>
+</body>
+</html>
