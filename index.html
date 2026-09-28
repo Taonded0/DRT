@@ -532,7 +532,7 @@
       <div id="dice-text-box">-</div>
     </div>
 
-    <div id="log">カラーダイスの出目を予測して、10フェイズ以内にトライを獲りきれ！</div>
+    <div id="log">カラーダイスの出目を予測し、10フェイズ以内にトライを獲りきれ！</div>
   </div>
 </div>
 
@@ -551,7 +551,7 @@
 
       <div class="tutorial-section">
         <h4>【ステップ2：ピッチの3つのレーン構造】</h4>
-        <p>ピッチは縦のエリアによって3つのレーンに分かれています。<br>
+        <p>ピッチは縦のエリアによって3種類5つのレーンに分かれています。<br>
         ・<strong>EL（エッジレーン / 外側）</strong>：大ゲインやキックパスが狙える反面、リスクも高い勝負どころ。<br>
         ・<strong>HL（ハーフレーン / 中間）</strong>：パスやランで着実にゲインを重ねる戦術の要。<br>
         ・<strong>CL（セントラルレーン / 中央）</strong>：攻撃の展開力を広げる司令塔エリア。</p>
@@ -562,7 +562,7 @@
         <p>ボールの位置で変わる5つの選択肢からルートを選びます。<br>
         ・<strong>Point</strong>：堅実に中央やサイドを突く基本の攻め。<br>
         ・<strong>Inside</strong>：内側を突くパス。手堅い進行。<br>
-        ・<strong>Middle</strong>：中央(CL)をダイナミックに攻めるルート。<br>
+        ・<strong>Middle</strong>：中央をダイナミックに攻めるルート。<br>
         ・<strong>Outside</strong>：外側のスペースを狙うハイゲインアタック。<br>
         ・<strong>Short</strong>：ギャップを鋭く突き刺す攻撃ルート。<br>
         ・<strong>Edge</strong>：最外側(EL)を限界まで攻めるルート。</p>
@@ -861,7 +861,7 @@
     let logExtra = "";
     if (hasCleanBreak && tempSteps > 0) {
       tempSteps *= 2;
-      logExtra = " (⚡ BOOST x2!)";
+      logExtra = " (BOOST x2!)";
     }
 
     if (hasCleanBreak && tempSteps <= 0) {
@@ -871,7 +871,7 @@
 
     if (isNextCB) {
       hasCleanBreak = true;
-      logExtra = " 🔥【CLEAN BREAK! NEXT GAIN x2】";
+      logExtra = " 【CLEAN BREAK! NEXT GAIN x2】";
     }
 
     let targetY = ballY - tempSteps;
@@ -891,11 +891,11 @@
       if (checkWinCondition()) return;
 
       if (isTO) {
-        failGame("🔄 TURNOVER! ボールを奪われました...");
+        failGame("TURNOVER! ボールを奪われました...");
         return;
       }
       if (isOutside22m) {
-        failGame("⚠️ OUT OF BOUNDS! 22m外へ押し出されました...");
+        failGame("OUT OF BOUNDS! 22m外へ押し出されました...");
         return;
       }
 
@@ -906,7 +906,7 @@
           const opRoll = Math.floor(Math.random() * 6);
 
           if (opRoll === 0) {
-            failGame("❌ OFFLOAD FAILED! ハンドリングエラー...");
+            failGame("OFFLOAD FAILED! ハンドリングエラー...");
           } else {
             const opGain = opRoll; 
             
@@ -915,7 +915,7 @@
             if (isOpOutside) opTargetY = TOTAL_LINES - 1;
             if (opTargetY < 0) opTargetY = 0;
 
-            document.getElementById('log').innerText = `⚡ OFFLOAD SUCCESS! ＋${opGain} GAIN!!`;
+            document.getElementById('log').innerText = `OFFLOAD SUCCESS! ＋${opGain} GAIN!!`;
 
             const token = document.getElementById('ball-token');
             ballY = opTargetY;
@@ -923,7 +923,7 @@
 
             setTimeout(() => {
               if (isOpOutside) {
-                failGame("⚠️ OUT OF BOUNDS! 22m外へ押し出されました...");
+                failGame("OUT OF BOUNDS! 22m外へ押し出されました...");
                 return;
               }
               if (checkWinCondition()) return;
@@ -950,7 +950,7 @@
         const targetEdgeX = (originalEdgeX === 0) ? 4 : 0;
         const targetY = 0;
 
-        document.getElementById('log').innerText = `【Edge】➔ 1A！ アドバンテージ！ クロスキック発動！...`;
+        document.getElementById('log').innerText = `【Edge】➔ 1A！ アドバンテージ！...`;
 
         setTimeout(() => {
           document.getElementById('log').innerText = ` 逆サイドへクロスキック！！`;
@@ -971,10 +971,10 @@
             if (isSuccess) {
               totalTries++;
               document.getElementById('score-tries').innerText = totalTries;
-              document.getElementById('log').innerText = `✨ CATCH SUCCESS! クロスキックトライ達成！！`;
+              document.getElementById('log').innerText = `CATCH SUCCESS! クロスキックトライ成功！！`;
               setTimeout(() => { resetGameSession(); }, 2500);
             } else {
-              document.getElementById('log').innerText = `❌ CATCH FAILED... 元のEdgeへ戻りフェイズ1リスタート。`;
+              document.getElementById('log').innerText = `CATCH FAILED... 元のEdgeへ戻りフェイズ1リスタート。`;
               
               ballX = originalEdgeX;
               ballY = originalY;
@@ -1051,7 +1051,7 @@
     document.getElementById('dice-text-box').style.backgroundColor = 'rgba(10, 14, 23, 0.9)';
     document.getElementById('dice-text-box').style.color = '#fff';
     
-    document.getElementById('log').innerText = `ゲームスタート！10フェイズ以内にTRYを狙え！`;
+    document.getElementById('log').innerText = `ゲームスタート！10フェイズ以内にトライを獲りきれ！`;
   }
 
   function lockControls(isLock) {
