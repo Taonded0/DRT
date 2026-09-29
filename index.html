@@ -22,7 +22,7 @@
     user-select: none;
   }
 
-  /* ヘッダー：グラスモーフィズム & ネオンライン */
+  /* ヘッダー */
   #game-header {
     width: 285px;
     margin: 0 auto 4px auto;
@@ -192,7 +192,6 @@
     text-shadow: 0 0 5px rgba(0, 242, 254, 0.8);
   }
 
-  /* サイバーオーブ型楕円ラグビーボール */
   #ball-token {
     position: absolute;
     width: 10px;
@@ -285,7 +284,6 @@
     outline: none;
   }
 
-  /* スタイリッシュなネオングラデーションボタン */
   #controls button#roll-btn { 
     background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
     color: #090a0f; 
@@ -559,11 +557,12 @@
 
       <div class="tutorial-section">
         <h4>【ステップ3：アタックチャンネルを選ぼう】</h4>
-        <p>ボールの位置で変わる5つの選択肢からルートを選びます。<br>
+        <p>ボールの位置で変わる選択肢からルートを選びます。<br>
+        ※<strong>中央（CL）にボールがある時は、左右のインサイド／アウトサイドでダイスの特徴が変化します！</strong><br>
         ・<strong>Point</strong>：堅実に中央やサイドを突く基本の攻め。<br>
-        ・<strong>Inside</strong>：内側を突くパス。手堅い進行。<br>
+        ・<strong>Inside</strong>：内側を突くパス。左右で安定型／突破型に分かれます。<br>
         ・<strong>Middle</strong>：中央をダイナミックに攻めるルート。<br>
-        ・<strong>Outside</strong>：外側のスペースを狙うハイゲインアタック。<br>
+        ・<strong>Outside</strong>：外側のスペースを狙う展開。左右でハイリスク型／連続加速型に分かれます。<br>
         ・<strong>Short</strong>：ギャップを鋭く突き刺す攻撃ルート。<br>
         ・<strong>Edge</strong>：最外側(EL)を限界まで攻めるルート。</p>
       </div>
@@ -596,13 +595,24 @@
     { name: '橙', key: 'orange', hex: '#ff7675' }
   ];
 
+  // パステーブル（CL専用の左右独立テーブルを追加）
   const PASS_TABLE = {
-    'Point':   { red: {val: 0, label: '0'}, blue: {val: 0, label: '0'}, yellow: {val: 0, label: '0'},  purple: {val: 1, label: '1'},  green: {val: 1, label: '1'},  orange: {val: 0, label: '0'} },
-    'Inside':  { red: {val: -1, label: '-1'}, blue: {val: -1, label: '-1'},yellow: {val: 0, label: '0'},  purple: {val: 1, label: '1'},  green: {val: 1, label: '1'},  orange: {val: 1, label: '1'} },
-    'Middle':  { red: {val: 2, label: '2'}, blue: {val: -1, label: '-1'},yellow: {val: -1, label: '-1'}, purple: {val: 0, label: '0'},  green: {val: 1, label: '1'},  orange: {val: '1OP', isOffload: true, label: '1OP'} },
-    'Short':   { red: {val: 2, label: '2'}, blue: {val: 3, isCNB: true, label: '3CB'}, yellow: {val: -1, label: '-1'},purple: {val: -1, label: '-1'}, green: {val: 0, label: '0'},  orange: {val: 0, label: '0'} },
-    'Outside': { red: {val: 1, label: '1'}, blue: {val: 2, label: '2'}, yellow: {val: 4, isCNB: true, label: '4CB'}, purple: {val: -2, label: '-2'}, green: {val: -1, label: '-1'}, orange: {val: 0, label: '0'} },
-    'Edge':    { red: {val: 0, label: '0'}, blue: {val: '1A', isKickPass: true, label: '1A'}, yellow: {val: 3, label: '3'},  purple: {val: 5, isCNB: true, label: '5CB'}, green: {val: 'TO', isTO: true, label: 'TO'}, orange: {val: -2, label: '-2'} }
+    'Point':       { red: {val: 0, label: '0'}, blue: {val: 0, label: '0'}, yellow: {val: 0, label: '0'},  purple: {val: 1, label: '1'},  green: {val: 1, label: '1'},  orange: {val: 0, label: '0'} },
+    'Inside':      { red: {val: -1, label: '-1'}, blue: {val: -1, label: '-1'},yellow: {val: 0, label: '0'},  purple: {val: 1, label: '1'},  green: {val: 1, label: '1'},  orange: {val: 1, label: '1'} },
+    'Middle':      { red: {val: 2, label: '2'}, blue: {val: -1, label: '-1'},yellow: {val: -1, label: '-1'}, purple: {val: 0, label: '0'},  green: {val: 1, label: '1'},  orange: {val: '1OP', isOffload: true, label: '1OP'} },
+    'Short':       { red: {val: 2, label: '2'}, blue: {val: 3, isCNB: true, label: '3CB'}, yellow: {val: -1, label: '-1'},purple: {val: -1, label: '-1'}, green: {val: 0, label: '0'},  orange: {val: 0, label: '0'} },
+    'Outside':     { red: {val: 1, label: '1'}, blue: {val: 2, label: '2'}, yellow: {val: 4, isCNB: true, label: '4CB'}, purple: {val: -2, label: '-2'}, green: {val: -1, label: '-1'}, orange: {val: 0, label: '0'} },
+    'Edge':        { red: {val: 0, label: '0'}, blue: {val: '1A', isKickPass: true, label: '1A'}, yellow: {val: 3, label: '3'},  purple: {val: 5, isCNB: true, label: '5CB'}, green: {val: 'TO', isTO: true, label: 'TO'}, orange: {val: -2, label: '-2'} },
+
+    // 【CL専用】インサイド（左HL）：堅実・安定型ルート（マイナス目なし）
+    'Inside_Left': { red: {val: 1, label: '1'}, blue: {val: 1, label: '1'}, yellow: {val: 0, label: '0'}, purple: {val: 1, label: '1'}, green: {val: 2, label: '2'}, orange: {val: 0, label: '0'} },
+    // 【CL専用】インサイド（右HL）：突破・展開型ルート
+    'Inside_Right':{ red: {val: -1, label: '-1'}, blue: {val: 0, label: '0'}, yellow: {val: 1, label: '1'}, purple: {val: 2, label: '2'}, green: {val: 1, label: '1'}, orange: {val: '1OP', isOffload: true, label: '1OP'} },
+
+    // 【CL専用】アウトサイド（左EL）：ハイリスク・一撃離脱型ルート（クロスキック1A／5CB狙い）
+    'Outside_Left':{ red: {val: -2, label: '-2'}, blue: {val: '1A', isKickPass: true, label: '1A'}, yellow: {val: 5, isCNB: true, label: '5CB'}, purple: {val: -1, label: '-1'}, green: {val: 'TO', isTO: true, label: 'TO'}, orange: {val: 1, label: '1'} },
+    // 【CL専用】アウトサイド（右EL）：連続加速型ルート（着実なハイゲイン）
+    'Outside_Right':{ red: {val: 1, label: '1'}, blue: {val: 2, label: '2'}, yellow: {val: 3, label: '3'}, purple: {val: 4, isCNB: true, label: '4CB'}, green: {val: -1, label: '-1'}, orange: {val: 0, label: '0'} }
   };
 
   const TOTAL_LINES = 13; 
@@ -702,12 +712,13 @@
         { label: 'Outside (左EL)', x: 0, key: 'Outside' }
       ];
     } else {
+      // 駒が中央（CL: ballX === 2）にあるとき専用の選択肢（左右の出目を差別化）
       currentAvailableOptions = [
         { label: 'Point (CL)', x: 2, key: 'Point' },
-        { label: 'Inside (左HL)', x: 1, key: 'Inside' },
-        { label: 'Inside (右HL)', x: 3, key: 'Inside' },
-        { label: 'Outside (左EL)', x: 0, key: 'Outside' },
-        { label: 'Outside (右EL)', x: 4, key: 'Outside' }
+        { label: 'Inside (左HL)', x: 1, key: 'Inside_Left' },
+        { label: 'Inside (右HL)', x: 3, key: 'Inside_Right' },
+        { label: 'Outside (左EL)', x: 0, key: 'Outside_Left' },
+        { label: 'Outside (右EL)', x: 4, key: 'Outside_Right' }
       ];
     }
 
@@ -809,7 +820,7 @@
         token.style.left = X_POS[intermediateX] + '%';
         ballX = intermediateX;
         stepIdx++;
-        setTimeout(jumpToNextIntermediateX, 500);
+        setTimeout(jumpToNextIntermediateX, 200);
       } else {
         setTimeout(() => {
           token.style.top = linePositionsY[newY] + '%';
@@ -846,7 +857,7 @@
     if (typeof result === 'number') {
       tempSteps = result;
       if (cellData.isCNB) isNextCB = true;
-    } else if (result === '1a' || result === '1op') {
+    } else if (result === '1A' || result === '1OP' || result === '1a' || result === '1op') {
       tempSteps = 1;
     } else {
       const cleanVal = parseInt(result);
@@ -900,7 +911,7 @@
       }
 
       if (isOffload) {
-        document.getElementById('log').innerText = `【Middle】➔ 1OP！ オフロードパス成功！...`;
+        document.getElementById('log').innerText = `【${selectedOption.label}】➔ 1OP！ オフロードパス成功！...`;
 
         setTimeout(() => {
           const opRoll = Math.floor(Math.random() * 6);
@@ -950,7 +961,7 @@
         const targetEdgeX = (originalEdgeX === 0) ? 4 : 0;
         const targetY = 0;
 
-        document.getElementById('log').innerText = `【Edge】➔ 1A！ アドバンテージ！...`;
+        document.getElementById('log').innerText = `【${selectedOption.label}】➔ 1A！ アドバンテージ！...`;
 
         setTimeout(() => {
           document.getElementById('log').innerText = ` 逆サイドへクロスキック！！`;
@@ -974,7 +985,7 @@
               document.getElementById('log').innerText = `CATCH SUCCESS! クロスキックトライ成功！！`;
               setTimeout(() => { resetGameSession(); }, 2500);
             } else {
-              document.getElementById('log').innerText = `CATCH FAILED... 元のEdgeへ戻りフェイズ1リスタート。`;
+              document.getElementById('log').innerText = `CATCH FAILED... 元の位置へ戻りフェイズ1リスタート。`;
               
               ballX = originalEdgeX;
               ballY = originalY;
@@ -1003,7 +1014,7 @@
       }
 
       currentPhase++;
-      document.getElementById('log').innerText = `【${selectedOption.key}】➔ [${rolledMeta.name}] ${cellData.label}${logExtra}`;
+      document.getElementById('log').innerText = `【${selectedOption.label}】➔ [${rolledMeta.name}] ${cellData.label}${logExtra}`;
 
       if (currentPhase > maxPhases) {
         failGame("⏱️ PHASE LIMIT EXCEEDED!");
@@ -1059,7 +1070,9 @@
     document.getElementById('channel-select').disabled = isLock;
   }
 
-  setupBoard();
+  window.addEventListener('DOMContentLoaded', () => {
+    setupBoard();
+  });
 </script>
 </body>
 </html>
